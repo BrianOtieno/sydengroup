@@ -1,3 +1,4 @@
+import email
 from pydantic import BaseModel, constr,  Field
 from sqlalchemy import Column, Integer, String
 from typing import Optional
@@ -12,10 +13,19 @@ class UserORM(Base):
     email = Column(String)
     password = Column(String)
     
-class UserModel(BaseModel): 
+class UserModel(BaseModel):
+    # id: Optional[int] = None
     first_name: str
     last_name: str
     email: str
     password: constr(max_length=255)
+
+class ShowUserModel(BaseModel):
+    first_name: str
+    last_name: str
+    email: str 
+    password: str
+    class Config():
+        orm_mode = True
     
 

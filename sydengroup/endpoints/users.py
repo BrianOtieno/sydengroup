@@ -4,8 +4,8 @@ import re
 from telnetlib import STATUS
 from fastapi import APIRouter, HTTPException, Response
 from fastapi import status, Depends
-from sydengroup.models.users import UserModel, UserORM
-from typing import Optional
+from sydengroup.models.users import UserModel, UserORM, ShowUserModel
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from config import get_db#, get_session
 
@@ -16,7 +16,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 ) 
 
-@router.get("/detail")
+@router.get("/detail", status_code=status.HTTP_200_OK, response_model=List[ShowUserModel])
 async def read_users(db: Session = Depends(get_db)):
     users = db.query(UserORM).all()
     return users 
@@ -29,7 +29,7 @@ async def add_user(request: UserModel, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@router.get("/{id}")
+@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=ShowUserModel)
 async def profile(id, response: Response, db: Session = Depends(get_db)):
     profile = db.query(UserORM).filter(UserORM.id == id).first()
     if not profile:
@@ -37,7 +37,7 @@ async def profile(id, response: Response, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found") 
     return profile
 
-@router.put("/update/{id}")
+@router.put("/update/{id}", status_code=status.HTTP_200_OK)
 async def update_profile(id, request: UserModel, db: Session = Depends(get_db)):
     profile = db.query(UserORM).filter(UserORM.id == id)
     if not profile.first():
@@ -48,8 +48,10 @@ async def update_profile(id, request: UserModel, db: Session = Depends(get_db)):
     
 @router.delete("/{user_id}/delete", status_code=status.HTTP_200_OK)
 async def delete_profile(user_id: int, db: Session = Depends(get_db)):
+    profile = db.query(UserORM).filter(UserORM.id == user_id)
+    if not profile.first(): 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="profile not found")
     db.query(UserORM).filter(UserORM.id == user_id).delete(synchronize_session='evaluate')
-    if db.commit(): 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="profile not found") 
+    db.commit()
     return {'detail': "deleted"}
     
