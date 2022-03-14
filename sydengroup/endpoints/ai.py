@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from fastapi import Query
-from sydengroup.models.users import UserModel
-from typing import Optional
+from fastapi import Depends 
+from sydengroup.models.authentication import get_current_user
+from sydengroup.models.users import UserORM
 
 
 router = APIRouter(
@@ -19,9 +19,12 @@ router = APIRouter(
 #     return [{"detail": "Prediction pipeline"}]
 
 @router.post("/train")
-def train():
+def train(current_user: UserORM = Depends(get_current_user)):
     return [{"detail": "Training pipeline"}]
 
 @router.post("/predict")
-def predict():
+def predict(current_user: UserORM = Depends(get_current_user)):
     return [{"detail": "Prediction pipeline"}]
+
+async def pipeline():
+    pass

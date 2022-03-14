@@ -26,9 +26,14 @@ app.include_router(api_router)
 #         await conn.run_sync(Base.metadata.create_all)
 
 
-@app.get("/")
+@app.on_event("startup")
+async def on_startup():
+    # Base.metadata.drop_all(engine) 
+    Base.metadata.create_all(engine)
+
+@app.get("/", tags=["Home"])
 async def read_root():
-    return {"Hello": "World"} 
+    return {"Sydengroup": "Home"} 
 
 # @app.get("/")
 # def read_root():
