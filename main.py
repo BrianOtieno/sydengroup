@@ -28,7 +28,7 @@ app.include_router(api_router)
 
 @app.on_event("startup")
 async def on_startup():
-    Base.metadata.drop_all(engine) 
+    # Base.metadata.drop_all(engine) 
     Base.metadata.create_all(engine)
 
 @app.get("/", tags=["Home"])
