@@ -20,19 +20,18 @@ router = APIRouter(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-
-@router.get("/detail", status_code=status.HTTP_200_OK, response_model=List[ShowUserModel])
-async def read_users(db: Session = Depends(get_db), current_user: UserORM = Depends(get_current_user)):
-    users = db.query(UserORM).all()
-    return users 
-
-@router.post("/add", status_code=status.HTTP_201_CREATED, response_model=ShowUserModel)
-async def add_user(request: UserModel, db: Session = Depends(get_db), current_user: UserORM = Depends(get_current_user)): 
+@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=ShowUserModel)
+async def add_user(request: UserModel, db: Session = Depends(get_db)): 
     new_user = UserORM(first_name=request.first_name, last_name=request.last_name, username=request.username, email=request.email, password=UserORM.get_password_hash(request.password)) 
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
+
+@router.get("/detail", status_code=status.HTTP_200_OK, response_model=List[ShowUserModel])
+async def read_users(db: Session = Depends(get_db), current_user: UserORM = Depends(get_current_user)):
+    users = db.query(UserORM).all()
+    return users 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=ShowUserModel)
 async def profile(id, response: Response, db: Session = Depends(get_db), current_user: UserORM = Depends(get_current_user)):

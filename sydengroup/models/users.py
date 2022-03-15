@@ -2,10 +2,11 @@ import email
 from faulthandler import disable
 # from xmlrpc.client import Boolean
 from pydantic import BaseModel, constr,  Field
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from typing import Optional
 from config import Base
 from passlib.context import CryptContext
+from sqlalchemy.orm import relationship
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -18,6 +19,8 @@ class UserORM(Base):
     email = Column(String)
     password = Column(String)
     disabled = Column(Boolean(), default=False, nullable=True)
+    
+    faq = relationship("FAQ", back_populates="user")
     
     def get_password_hash(password):
         return pwd_context.hash(password)

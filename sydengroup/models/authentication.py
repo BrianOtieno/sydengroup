@@ -54,8 +54,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     except JWTError:
         raise credentials_exception
     
-    user = db.query(UserORM).filter(UserORM.username == username).first()
-    # user = UserORM(fake_users_db, username=token_data.username)
+    user = db.query(UserORM).filter(UserORM.username == username).first() 
     if user is None:
         raise credentials_exception
     return user
