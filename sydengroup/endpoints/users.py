@@ -2,8 +2,7 @@ import email
 from hashlib import new
 import re
 # from telnetlib import STATUS
-from fastapi import APIRouter, HTTPException, Response
-from fastapi import status, Depends
+from fastapi import APIRouter, Depends, HTTPException, Response, status 
 from sydengroup.models.users import UserModel, UserORM, ShowUserModel
 from typing import List
 from sqlalchemy.orm import Session

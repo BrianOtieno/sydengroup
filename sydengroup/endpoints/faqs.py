@@ -1,11 +1,11 @@
-from hashlib import new
+from hashlib import new 
 from fastapi import APIRouter
-from fastapi import Depends 
+from fastapi import Depends, HTTPException, status
 from sydengroup.models.authentication import get_current_user
 from sydengroup.models.users import UserORM
 from config import get_db
 from sqlalchemy.orm import Session
-from sydengroup.models.faqs import FAQ, ShowFAQ, AddFAQs
+from sydengroup.models.faqs import FAQ, FAQResponse, ShowFAQ, AddFAQs
 
 
 router = APIRouter(
@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get("/")
 async def faqs(current_user: UserORM = Depends(get_current_user)):
-    return [{"detail": "Frequently Asked Questions"}]
+    return [{"username": current_user}]
 
 @router.post('/add')
 async def add_faqs(request: AddFAQs, db: Session = Depends(get_db), current_user: UserORM = Depends(get_current_user)):
@@ -31,9 +31,8 @@ async def recent_faqs(current_user: UserORM = Depends(get_current_user)):
     return [{"detail": "Recent FAQs"}]
 
 @router.get("/{id}")
-async def my_faqs(id: int, current_user: UserORM = Depends(get_current_user)):
-    return [{"detail": "My FAQs"}]
-
-
-
-
+async def my_faqs(id: int, current_user: UserORM = Depends(get_current_user), db: Session = Depends(get_db)):
+    if id is not current_user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"user {id} not logged in.")
+    faqs = db.query(FAQ).filter(FAQ.userid == current_user.id).limit(10).all() 
+    return faqs
