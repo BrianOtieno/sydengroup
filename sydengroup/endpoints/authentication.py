@@ -16,7 +16,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 router = APIRouter(
     prefix="/authentication",
     tags=["Authentication"],
-    responses={404: {"description": "Not found"}},)
+    responses={404: {"description": "Not found"}},
+)
 
 @router.post('/')
 async def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

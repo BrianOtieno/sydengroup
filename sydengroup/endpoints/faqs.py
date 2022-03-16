@@ -27,8 +27,9 @@ async def add_faqs(request: AddFAQs, db: Session = Depends(get_db), current_user
     return new_faq
 
 @router.get("/recent")
-async def recent_faqs(current_user: UserORM = Depends(get_current_user)):
-    return [{"detail": "Recent FAQs"}]
+async def recent_faqs(current_user: UserORM = Depends(get_current_user), db: Session = Depends(get_db)):
+    faqs = db.query(FAQ).limit(5).all()
+    return faqs
 
 @router.get("/{id}")
 async def my_faqs(id: int, current_user: UserORM = Depends(get_current_user), db: Session = Depends(get_db)):
