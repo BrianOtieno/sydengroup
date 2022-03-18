@@ -21,3 +21,4 @@ class FAQResponse(BaseModel):
 class ShowFAQ(BaseModel):
     question: str
     creator: ShowUserModel
+    creator: ShowUserModel
