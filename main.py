@@ -7,11 +7,11 @@ from config import engine, Base
 
 app = FastAPI()
 
-# origins = ["http://localhost:8000"]
+origins = ["http://localhost:8000", "http://10.0.2.2:8000", "http://127.0.0.1:8000"]
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=origins,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"], 
     allow_headers=["*"],
